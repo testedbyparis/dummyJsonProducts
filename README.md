@@ -2,19 +2,19 @@
 
 ## 🌐 API Testing Portfolio: Dummy JSON Products
 
-## 🚀 Project Overview
+### 🚀 Project Overview
 
 This project showcases a robust API testing strategy applied to the public Dummy JSON Products API. It demonstrates proficiency in multiple testing methodologies, including End-to-End (E2E) flows, Functional Validation, Contract Testing, Negative Testing, and Schema Validation.
 
 The entire test suite is implemented using Postman and its native JavaScript testing framework.
 
-## 🛠️ Testing Methodology & Coverage
+### 🛠️ Testing Methodology & Coverage
 
 The tests are organized to reflect a comprehensive approach to quality assurance (QA), covering the full scope of a modern REST API.
 
 # TABELA AQUI
 
-## 🧪 Test Scenarios Implemented
+### 🧪 Test Scenarios Implemented
 
 The suite covers the following 
 
@@ -22,12 +22,12 @@ The suite covers the following
 
 1. End-to-End Flows (E2E) ....
 
-## 🚀 Getting Started
+### 🚀 Getting Started
 
-### Prerequisites
+#### Prerequisites
 - Postman installed.
 
-### Installation
+#### Installation
 
 1. Download the Collection: Download the Postman Collection JSON file.
 2. Import: In Postman, click Import and select the downloaded JSON file.
