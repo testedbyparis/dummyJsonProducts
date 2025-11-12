@@ -14,7 +14,7 @@
 					"name": "E2E Search and Details",
 					"item": [
 						{
-							"name": "Get all products",
+							"name": "GET all products",
 							"event": [
 								{
 									"listen": "test",
@@ -67,7 +67,7 @@
 							"response": []
 						},
 						{
-							"name": "Get a single product",
+							"name": "GET a single product",
 							"event": [
 								{
 									"listen": "test",
@@ -136,7 +136,7 @@
 							"response": []
 						},
 						{
-							"name": "Search for a product",
+							"name": "GET search for a product",
 							"event": [
 								{
 									"listen": "test",
@@ -194,7 +194,7 @@
 							"response": []
 						},
 						{
-							"name": "Get a single product by Id",
+							"name": "GET a single product by Id",
 							"event": [
 								{
 									"listen": "test",
@@ -262,7 +262,7 @@
 					"name": "E2E Data Filtering and Validation",
 					"item": [
 						{
-							"name": "Get products of a category",
+							"name": "GET products of a category",
 							"event": [
 								{
 									"listen": "test",
@@ -336,7 +336,7 @@
 							"response": []
 						},
 						{
-							"name": "Get all product categories",
+							"name": "GET all product categories",
 							"event": [
 								{
 									"listen": "test",
@@ -405,7 +405,7 @@
 					"name": "FT Simulate Deletion",
 					"item": [
 						{
-							"name": "Delete a product",
+							"name": "DELETE a product",
 							"event": [
 								{
 									"listen": "test",
@@ -488,7 +488,7 @@
 					"name": "FT Simulate Creation",
 					"item": [
 						{
-							"name": "Add a new product",
+							"name": "POST Add a new product",
 							"event": [
 								{
 									"listen": "test",
@@ -575,7 +575,7 @@
 					"name": "FT Simulate Edition",
 					"item": [
 						{
-							"name": "Update a product",
+							"name": "PUT update a product",
 							"event": [
 								{
 									"listen": "test",
@@ -645,6 +645,219 @@
 									"path": [
 										"products",
 										"1"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Schema Validation",
+					"item": [
+						{
+							"name": "GET Product Detail (Schema Validation)",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// Step 1: Status Code Validation\r",
+											"pm.test(\"Status code is 200 OK\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"// Step 2: Retrieve the schema definition stored in the Pre-request Script\r",
+											"const schemaString = pm.environment.get(\"productSchema\");\r",
+											"const productSchema = JSON.parse(schemaString);\r",
+											"\r",
+											"// Step 3: Get the response body\r",
+											"const productData = pm.response.json();\r",
+											"\r",
+											"// Step 4: Perform the Schema Validation\r",
+											"// Using the pm.expect() assertion combined with the global 'tv4' library\r",
+											"pm.test(\"Response matches the defined JSON schema\", function () {\r",
+											"    // The tv4.validate() method returns a boolean (true or false)\r",
+											"    const isSchemaValid = tv4.validate(productData, productSchema);\r",
+											"    \r",
+											"    // Assert that the schema validation was successful\r",
+											"    pm.expect(isSchemaValid, \r",
+											"        // If validation fails, provide the error message from tv4\r",
+											"        tv4.error ? tv4.error.message + \" at \" + tv4.error.dataPath : \"Schema validation failed.\"\r",
+											"    ).to.be.true;\r",
+											"});\r",
+											"\r",
+											"// Cleanup: Remove the temporary variable\r",
+											"pm.environment.unset(\"productSchema\");\r",
+											"\r",
+											"console.log(\"Schema validation completed.\");"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"// Step 1: Define the expected JSON schema for a single product object\r",
+											"const productSchema = {\r",
+											"    \"type\": \"object\",\r",
+											"    \"properties\": {\r",
+											"        \"id\": { \"type\": \"integer\" },\r",
+											"        \"title\": { \"type\": \"string\" },\r",
+											"        \"description\": { \"type\": \"string\" },\r",
+											"        \"price\": { \"type\": \"number\" },\r",
+											"        \"discountPercentage\": { \"type\": \"number\" },\r",
+											"        \"rating\": { \"type\": \"number\" },\r",
+											"        \"stock\": { \"type\": \"integer\" },\r",
+											"        \"brand\": { \"type\": \"string\" },\r",
+											"        \"category\": { \"type\": \"string\" },\r",
+											"        \"thumbnail\": { \"type\": \"string\" },\r",
+											"        \"images\": { \r",
+											"            \"type\": \"array\",\r",
+											"            \"items\": { \"type\": \"string\" }\r",
+											"        }\r",
+											"    },\r",
+											"    \"required\": [\r",
+											"        \"id\",\r",
+											"        \"title\",\r",
+											"        \"price\",\r",
+											"        \"category\" // Mandatory fields\r",
+											"    ],\r",
+											"    \"additionalProperties\": true // Allows other fields not listed above\r",
+											"};\r",
+											"\r",
+											"// Store the schema as an environment variable temporarily so the Tests tab can access it\r",
+											"pm.environment.set(\"productSchema\", JSON.stringify(productSchema));"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/products/{{selectedProductId}}",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"products",
+										"{{selectedProductId}}"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Negative Testing",
+					"item": [
+						{
+							"name": "GET Non-Existent ID (Expect 404)",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// Step 1: Checking for 404 Not Found status\r",
+											"pm.test(\"Status code is 404 Not Found\", function () {\r",
+											"    pm.response.to.have.status(404);\r",
+											"});\r",
+											"\r",
+											"// Step 2: Extract the response body\r",
+											"const response = pm.response.json();\r",
+											"\r",
+											"// Step 3: Validation that the response body contains an appropriate error message\r",
+											"pm.test(\"Response body contains 'not found' message\", function () {\r",
+											"    pm.expect(response.message).to.be.a('string');\r",
+											"    pm.expect(response.message).to.contain(\"not found\");\r",
+											"});\r",
+											"\r",
+											"console.log(`Test completed for non-existent ID. Status: ${pm.response.code}`);\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/products/9999",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"products",
+										"9999"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GET Invalid Route (Expect 404)",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// Step 1: Checking for 404 Not Found status\r",
+											"pm.test(\"Status code is 404 Not Found\", function () {\r",
+											"    pm.response.to.have.status(404);\r",
+											"});\r",
+											"\r",
+											"console.log(`Test completed for an invalid route. Status: ${pm.response.code}`);\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/nonexistent-route",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"nonexistent-route"
 									]
 								}
 							},
