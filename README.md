@@ -51,7 +51,15 @@ These ensure robust data handling and error control.
 
 - **Negative Test: Invalid Route:** Ensures that accessing an invalid path (GET /nonexistent-route) results in a 404 Not Found status.  
 
-## 🚀 Getting Started
+## 🚀 Automation & CI/CD Readiness (New!)
+
+This project is configured for seamless automation, emphasizing a shift-left QA approach:
+
+1.  **Newman Integration:** The entire collection is executable via the command line using **Newman**.
+2.  **HTML Reporting:** Generates detailed HTML reports using `newman-reporter-htmlextra` for easy failure analysis.
+3.  **CI/CD Pipeline:** **A GitHub Actions workflow is fully implemented** to automatically run the complete test suite on every code push, establishing an automated quality gate for the API contract.
+
+## 📋 Getting Started
 
 ### Prerequisites  
 
@@ -85,8 +93,8 @@ Run the tests from your terminal (ensure you are in the directory containing you
 
 ```bash
 # Replace 'Collection.json' and 'Environment.json' with your actual filenames
-newman run <Collection_File.json> -e <Environment_File.json> --reporters cli,htmlextra --reporter-htmlextra-export newman/report.html
+newman run <Collection_File.json> -e <Environment_File.json> --reporters cli,htmlextra --reporter-htmlextra-export newman/newman-report.html
 ```
 
 ##### Viewing the Report  
-After execution, a folder named newman will be created in your project root, containing a detailed HTML report file (report.html). Open this file in any web browser to view the structured results, including pass/fail status for every test and assertion.
+After execution, a folder named newman will be created in your project root, containing a detailed HTML report file (newman-report.html). Open this file in any web browser to view the structured results, including pass/fail status for every test and assertion.
