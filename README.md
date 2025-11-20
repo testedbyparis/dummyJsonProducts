@@ -90,6 +90,3 @@ newman run <Collection_File.json> -e <Environment_File.json> --reporters cli,htm
 
 ##### Viewing the Report  
 After execution, a folder named newman will be created in your project root, containing a detailed HTML report file (report.html). Open this file in any web browser to view the structured results, including pass/fail status for every test and assertion.
-
-
-- GitHub Actions soon
