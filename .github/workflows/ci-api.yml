@@ -21,6 +21,7 @@ jobs:
           
       - name: 3. Install Newman and Dependencies
         run: npm install
+        working-directory: 
 
       - name: 4. Execute Postman Collection via Newman
         run: |

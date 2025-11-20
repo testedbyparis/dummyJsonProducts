@@ -1,20 +1,23 @@
 {
-  "name": "api-testing-project",
+  "name": "dummyjsonproducts",
   "version": "1.0.0",
-  "description": "API tests executed via Newman in CI",
+  "description": "This project showcases a robust **API testing strategy** applied to the public [Dummy JSON Products API](https://dummyjson.com/docs/products). It demonstrates proficiency in multiple testing types, including **End-to-End (E2E) flows, Functional Validation, Contract Testing, Negative Testing, and Schema Validation.**",
+  "homepage": "https://github.com/testedbyparis/dummyJsonProducts#readme",
+  "bugs": {
+    "url": "https://github.com/testedbyparis/dummyJsonProducts/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/testedbyparis/dummyJsonProducts.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
   "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [
-    "postman",
-    "newman",
-    "api-testing"
-  ],
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "newman": "^6.0.0",
-    "newman-reporter-htmlextra": "^1.22.11"
   }
 }
