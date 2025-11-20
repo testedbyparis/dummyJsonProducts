@@ -28,11 +28,11 @@ jobs:
           newman run ./tests/dummyJsonProducts.postman_collection.json \
           -e ./tests/dummyJsonEnv.postman_environment.json \
           -r cli,htmlextra \
-          --reporter-htmlextra-export ./reports/newman-report.html
+          --reporter-htmlextra-export ./newman/newman-report.html
       
       - name: 5. Upload Newman HTML Report (Optional but Recommended)
         uses: actions/upload-artifact@v4
         with:
           name: newman-test-report
-          path: reports/newman-report.html
+          path: newman/newman-report.html
           retention-days: 5
