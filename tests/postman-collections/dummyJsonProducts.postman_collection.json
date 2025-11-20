@@ -1,0 +1,898 @@
+{
+	"info": {
+		"_postman_id": "3a39f3ba-f01e-43a4-bad8-1bdf6ec694e2",
+		"name": "dummyJsonProducts",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "49823464",
+		"_collection_link": "https://www.postman.com/testedbyparis-9982506/workspace/tested-by-paris-s-workspace/collection/49823464-3a39f3ba-f01e-43a4-bad8-1bdf6ec694e2?action=share&source=collection_link&creator=49823464"
+	},
+	"item": [
+		{
+			"name": "Products",
+			"item": [
+				{
+					"name": "E2E Search and Details",
+					"item": [
+						{
+							"name": "GET all products",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// Step 1: Validate the status code\r",
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"// Step 2: Extract the response body (JSON)\r",
+											"const response = pm.response.json();\r",
+											"\r",
+											"// Security check: Ensure the product list exists and is not empty\r",
+											"pm.test(\"Response contains products array\", function () {\r",
+											"    pm.expect(response.products).to.be.an('array').and.to.have.lengthOf.at.least(1);\r",
+											"});\r",
+											"\r",
+											"// Step 3: Select one product and store its data\r",
+											"// Pick the first product in the list (index 0)\r",
+											"const selectedProduct = response.products[0];\r",
+											"\r",
+											"// Step 4: Store the product ID and Title as Environment Variables for future use\r",
+											"pm.environment.set(\"selectedProductId\", selectedProduct.id);\r",
+											"pm.environment.set(\"selectedProductTitle\", selectedProduct.title);\r",
+											"pm.environment.set(\"selectedProductDescription\", selectedProduct.description); // Optional, but useful\r",
+											"\r",
+											"console.log(`ID do Produto Armazenado: ${pm.environment.get(\"selectedProductId\")}`);\r",
+											"console.log(`Título do Produto Armazenado: ${pm.environment.get(\"selectedProductTitle\")}`);"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/products",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"products"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GET a single product",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// Step 1: Validate the status code\r",
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"// Step 2: Extract the response body\r",
+											"const productDetail = pm.response.json();\r",
+											"\r",
+											"// Step 3: Retrieve the data stored from the previous request\r",
+											"const storedId = pm.environment.get(\"selectedProductId\");\r",
+											"const storedTitle = pm.environment.get(\"selectedProductTitle\");\r",
+											"const storedDescription = pm.environment.get(\"selectedProductDescription\");\r",
+											"\r",
+											"// Step 4: CRITICAL E2E VALIDATION\r",
+											"// The ID in the response must match the ID we previously fetched\r",
+											"pm.test(\"Product ID in Detail matches Stored ID\", function () {\r",
+											"    pm.expect(productDetail.id.toString()).to.equal(storedId.toString());\r",
+											"});\r",
+											"\r",
+											"// The Title in the detailed response must match the Title from the general list\r",
+											"pm.test(\"Product Title in Detail matches Title from All Products List\", function () {\r",
+											"    pm.expect(productDetail.title).to.equal(storedTitle);\r",
+											"});\r",
+											"\r",
+											"// Additional validations (e.g., description)\r",
+											"pm.test(\"Product Description in Detail matches Description from All Products List\", function () {\r",
+											"    pm.expect(productDetail.description).to.equal(storedDescription);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/products/{{selectedProductId}}",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"products",
+										"{{selectedProductId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GET search for a product",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// Step 1: Validate the status code\r",
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"// Step 2: Extract the response body\r",
+											"const response = pm.response.json();\r",
+											"\r",
+											"// Step 3: Safety Check: Ensure the search returned at least one product\r",
+											"pm.test(\"Search returned at least one product\", function () {\r",
+											"    pm.expect(response.products).to.be.an('array').and.to.have.lengthOf.at.least(1);\r",
+											"});\r",
+											"\r",
+											"// Step 4: Select the first product from the search results\r",
+											"const searchedProduct = response.products[0];\r",
+											"\r",
+											"// Step 5: Store the data in Environment variables for the next request\r",
+											"pm.environment.set(\"searchedProductId\", searchedProduct.id);\r",
+											"pm.environment.set(\"searchedProductTitle\", searchedProduct.title);\r",
+											"\r",
+											"console.log(`Product ID Stored from Search: ${pm.environment.get(\"searchedProductId\")}`);\r",
+											"console.log(`Product Title Stored from Search: ${pm.environment.get(\"searchedProductTitle\")}`);"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/products/search?q=phone",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"products",
+										"search"
+									],
+									"query": [
+										{
+											"key": "q",
+											"value": "phone"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GET a single product by Id",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// Step 1: Status Code Validation\r",
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"// Step 2: Extract the response body (Product Detail)\r",
+											"const productDetail = pm.response.json();\r",
+											"\r",
+											"// Step 3: Retrieve the stored data from the search step\r",
+											"const storedId = pm.environment.get(\"searchedProductId\");\r",
+											"const storedTitle = pm.environment.get(\"searchedProductTitle\");\r",
+											"\r",
+											"// Step 4: E2E Validation\r",
+											"pm.test(\"Product ID in Detail matches Stored ID from Search\", function () {\r",
+											"    pm.expect(productDetail.id.toString()).to.equal(storedId.toString());\r",
+											"});\r",
+											"\r",
+											"// The Title in the detail response must match the Title from the search results\r",
+											"pm.test(\"Product Title in Detail matches Title from Search Results\", function () {\r",
+											"    pm.expect(productDetail.title).to.equal(storedTitle);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/products/{{searchedProductId}}",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"products",
+										"{{searchedProductId}}"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "E2E Data Filtering and Validation",
+					"item": [
+						{
+							"name": "GET products of a category",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// Step 1: Validate the status code\r",
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"// Step 2: Set the Expected Category\r",
+											"const expectedCategory = \"smartphones\";\r",
+											"\r",
+											"// Step 3: Extract the response body\r",
+											"const response = pm.response.json();\r",
+											"\r",
+											"// Step 4: Verify that the product array exists and contains items\r",
+											"pm.test(\"Response contains products array and is not empty\", function () {\r",
+											"    pm.expect(response.products).to.be.an('array').and.to.have.lengthOf.at.least(1);\r",
+											"});\r",
+											"\r",
+											"// Step 5: E2E Validation: Iterate and validate each item\r",
+											"// Using a forEach loop to inspect each 'product' object in the list\r",
+											"response.products.forEach(product => {\r",
+											"    \r",
+											"    // Test for each product: the product category must match the expected category.\r",
+											"    pm.test(`Product ID ${product.id} must have category: ${expectedCategory}`, function () {\r",
+											"        pm.expect(product.category).to.equal(expectedCategory);\r",
+											"    });\r",
+											"    \r",
+											"    // Additional: Include other schema validations here.\r",
+											"    pm.test(`Product ID ${product.id} must have a title (string)`, function () {\r",
+											"        pm.expect(product.title).to.be.a('string');\r",
+											"    });\r",
+											"});\r",
+											"\r",
+											"// console.log(`Validation of ${response.products.length} products completed for category: ${expectedCategory}`);"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/products/category/smartphones",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"products",
+										"category",
+										"smartphones"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GET all product categories",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// Step 1: Validate the status code\r",
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"// Step 2: Extract the response body (array)\r",
+											"const categoriesArray = pm.response.json();\r",
+											"\r",
+											"// Step 3: Type and Structure Validation\r",
+											"pm.test(\"Response is a JSON array of categories\", function () {\r",
+											"    pm.expect(categoriesArray).to.be.an('array');\r",
+											"    pm.expect(categoriesArray).to.have.lengthOf.at.least(5); // Ensure it's not empty\r",
+											"});\r",
+											"\r",
+											"// Step 4: Data Structure Validation (Check the first element)\r",
+											"if (categoriesArray.length > 0) {\r",
+											"    pm.test(\"First item in the array is an object with a 'slug' property\", function () {\r",
+											"        pm.expect(categoriesArray[0]).to.be.an('object');\r",
+											"        pm.expect(categoriesArray[0]).to.have.property('slug');\r",
+											"        pm.expect(categoriesArray[0].slug).to.be.a('string');\r",
+											"    });\r",
+											"}\r",
+											"\r",
+											"// Step 5: Content Validation (Smoke Test - Check for key categories using the 'slug' property)\r",
+											"// Use the array method 'some' to check if any object in the array meets the condition.\r",
+											"pm.test(\"Array must contain the 'smartphones' category slug\", function () {\r",
+											"    const hasSmartphones = categoriesArray.some(cat => cat.slug === \"smartphones\");\r",
+											"    pm.expect(hasSmartphones).to.be.true;\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Array must contain the 'laptops' category slug\", function () {\r",
+											"    const hasLaptops = categoriesArray.some(cat => cat.slug === \"laptops\");\r",
+											"    pm.expect(hasLaptops).to.be.true;\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/products/categories",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"products",
+										"categories"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "FT Simulate Creation",
+					"item": [
+						{
+							"name": "POST Add a new product",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// Step 1: Status Code Validation\r",
+											"pm.test(\"Status code is 200 OK or 201 Created\", function () {\r",
+											"    // Accept both 200 (as per Dummy JSON) or 201 (standard creation code)\r",
+											"    pm.expect(pm.response.code).to.be.oneOf([200, 201]); \r",
+											"});\r",
+											"\r",
+											"// Step 2: Define the expected values sent in the request body\r",
+											"const expectedTitle = \"iPhone 17 Pro Max\";\r",
+											"const expectedPrice = 14699.99;\r",
+											"const expectedCategory = \"smartphone\";\r",
+											"\r",
+											"// Step 3: Extract the response body\r",
+											"const response = pm.response.json();\r",
+											"\r",
+											"// Step 4: Contract Validation (Checking if sent data is reflected)\r",
+											"pm.test(\"Title in response matches the title sent in the request\", function () {\r",
+											"    pm.expect(response).to.have.property('title');\r",
+											"    pm.expect(response.title).to.equal(expectedTitle);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Price in response matches the price sent in the request\", function () {\r",
+											"    pm.expect(response).to.have.property('price');\r",
+											"    pm.expect(response.price).to.equal(expectedPrice);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Category in response matches the category sent in the request\", function () {\r",
+											"    pm.expect(response).to.have.property('category');\r",
+											"    pm.expect(response.category).to.equal(expectedCategory);\r",
+											"});\r",
+											"\r",
+											"// Step 5: Simulation ID Validation\r",
+											"// This API assigns a simulated ID\r",
+											"pm.test(\"A simulated ID has been assigned\", function () {\r",
+											"    pm.expect(response).to.have.property('id');\r",
+											"    pm.expect(response.id).to.be.a('number');\r",
+											"    pm.expect(response.id).to.be.above(100); // Should be higher than the default 100 products\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"title\": \"iPhone 17 Pro Max\",\r\n    \"price\": 14699.99,\r\n    \"description\": \"It is the top-tier model in the iPhone 17 lineup.\",\r\n    \"category\": \"smartphone\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/products/add",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"products",
+										"add"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "FT Simulate Edition",
+					"item": [
+						{
+							"name": "PUT update a product",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// Step 1: Status Code Validation\r",
+											"pm.test(\"Status code is 200 OK\", function () {\r",
+											"    pm.response.to.have.status(200); \r",
+											"});\r",
+											"\r",
+											"// Step 2: Define the values expected to be returned in the response\r",
+											"const updatedTitle = \"Updated Test Title via Postman: iPhone 17 Pro\";\r",
+											"const updatedPrice = 1319.99;\r",
+											"\r",
+											"// Step 3: Extract the response body\r",
+											"const response = pm.response.json();\r",
+											"\r",
+											"// Step 4: Contract Validation (Checking for updated data)\r",
+											"// Verify the new title sent in the request is reflected in the response\r",
+											"pm.test(\"Title in response matches the updated title sent in the request\", function () {\r",
+											"    pm.expect(response).to.have.property('title');\r",
+											"    pm.expect(response.title).to.equal(updatedTitle);\r",
+											"});\r",
+											"\r",
+											"// Verify the new price sent in the request is reflected in the response\r",
+											"pm.test(\"Price in response matches the updated price sent in the request\", function () {\r",
+											"    pm.expect(response).to.have.property('price');\r",
+											"    pm.expect(response.price).to.equal(updatedPrice);\r",
+											"});\r",
+											"\r",
+											"// Step 5: Payload Integrity Validation\r",
+											"// Ensure the response is still for the correct product ID\r",
+											"pm.test(\"Response ID is the expected product ID (1)\", function () {\r",
+											"    pm.expect(response).to.have.property('id');\r",
+											"    pm.expect(response.id).to.equal(1);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"title\": \"Updated Test Title via Postman: iPhone 17 Pro\",\r\n    \"price\": 1319.99 \r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/products/1",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"products",
+										"1"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "FT Simulate Deletion",
+					"item": [
+						{
+							"name": "DELETE a product",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// Step 1: Status Code Validation\r",
+											"pm.test(\"Status code is 200 OK\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"// Step 2: The expected ID for the deleted product\r",
+											"const expectedId = 1;\r",
+											"\r",
+											"// Step 3: Extract the response body\r",
+											"const response = pm.response.json();\r",
+											"\r",
+											"// Step 4: Deletion Confirmation Validation\r",
+											"// Dummy JSON confirms deletion by adding 'isDeleted: true' to the object.\r",
+											"pm.test(\"Deletion Confirmation: 'isDeleted' property is true\", function () {\r",
+											"    pm.expect(response).to.have.property('isDeleted');\r",
+											"    pm.expect(response.isDeleted).to.be.true;\r",
+											"});\r",
+											"\r",
+											"// Step 5: Payload Integrity Validation\r",
+											"// The returned object must match the ID that was requested for deletion.\r",
+											"pm.test(`Payload Integrity: The ID must match the deleted product (${expectedId})`, function () {\r",
+											"    pm.expect(response).to.have.property('id');\r",
+											"    // Ensure the ID in the payload matches the one we requested to delete\r",
+											"    pm.expect(response.id).to.equal(expectedId);\r",
+											"});\r",
+											"\r",
+											"// Optional: Ensure the deletion timestamp is present\r",
+											"pm.test(\"Deletion Confirmation: 'deletedOn' timestamp is present\", function () {\r",
+											"    pm.expect(response).to.have.property('deletedOn');\r",
+											"    pm.expect(response.deletedOn).to.be.a('string'); // Check if the timestamp is a string\r",
+											"});\r",
+											"\r",
+											"console.log(`Deletion of Product ID ${response.id} successfully simulated and validated.`);"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/products/1",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"products",
+										"1"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Schema Validation",
+					"item": [
+						{
+							"name": "GET Product Detail (Schema Validation)",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// Step 1: Status Code Validation\r",
+											"pm.test(\"Status code is 200 OK\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"// Step 2: Retrieve the schema definition stored in the Pre-request Script\r",
+											"const schemaString = pm.environment.get(\"productSchema\");\r",
+											"const productSchema = JSON.parse(schemaString);\r",
+											"\r",
+											"// Step 3: Get the response body\r",
+											"const productData = pm.response.json();\r",
+											"\r",
+											"// Step 4: Perform the Schema Validation\r",
+											"// Using the pm.expect() assertion combined with the global 'tv4' library\r",
+											"pm.test(\"Response matches the defined JSON schema\", function () {\r",
+											"    // The tv4.validate() method returns a boolean (true or false)\r",
+											"    const isSchemaValid = tv4.validate(productData, productSchema);\r",
+											"    \r",
+											"    // Assert that the schema validation was successful\r",
+											"    pm.expect(isSchemaValid, \r",
+											"        // If validation fails, provide the error message from tv4\r",
+											"        tv4.error ? tv4.error.message + \" at \" + tv4.error.dataPath : \"Schema validation failed.\"\r",
+											"    ).to.be.true;\r",
+											"});\r",
+											"\r",
+											"// Cleanup: Remove the temporary variable\r",
+											"pm.environment.unset(\"productSchema\");\r",
+											"\r",
+											"console.log(\"Schema validation completed.\");"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"// Step 1: Define the expected JSON schema for a single product object\r",
+											"const productSchema = {\r",
+											"    \"type\": \"object\",\r",
+											"    \"properties\": {\r",
+											"        \"id\": { \"type\": \"integer\" },\r",
+											"        \"title\": { \"type\": \"string\" },\r",
+											"        \"description\": { \"type\": \"string\" },\r",
+											"        \"price\": { \"type\": \"number\" },\r",
+											"        \"discountPercentage\": { \"type\": \"number\" },\r",
+											"        \"rating\": { \"type\": \"number\" },\r",
+											"        \"stock\": { \"type\": \"integer\" },\r",
+											"        \"brand\": { \"type\": \"string\" },\r",
+											"        \"category\": { \"type\": \"string\" },\r",
+											"        \"thumbnail\": { \"type\": \"string\" },\r",
+											"        \"images\": { \r",
+											"            \"type\": \"array\",\r",
+											"            \"items\": { \"type\": \"string\" }\r",
+											"        }\r",
+											"    },\r",
+											"    \"required\": [\r",
+											"        \"id\",\r",
+											"        \"title\",\r",
+											"        \"price\",\r",
+											"        \"category\" // Mandatory fields\r",
+											"    ],\r",
+											"    \"additionalProperties\": true // Allows other fields not listed above\r",
+											"};\r",
+											"\r",
+											"// Store the schema as an environment variable temporarily so the Tests tab can access it\r",
+											"pm.environment.set(\"productSchema\", JSON.stringify(productSchema));"
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/products/{{selectedProductId}}",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"products",
+										"{{selectedProductId}}"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Negative Testing",
+					"item": [
+						{
+							"name": "GET Non-Existent ID (Expect 404)",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// Step 1: Checking for 404 Not Found status\r",
+											"pm.test(\"Status code is 404 Not Found\", function () {\r",
+											"    pm.response.to.have.status(404);\r",
+											"});\r",
+											"\r",
+											"// Step 2: Extract the response body\r",
+											"const response = pm.response.json();\r",
+											"\r",
+											"// Step 3: Validation that the response body contains an appropriate error message\r",
+											"pm.test(\"Response body contains 'not found' message\", function () {\r",
+											"    pm.expect(response.message).to.be.a('string');\r",
+											"    pm.expect(response.message).to.contain(\"not found\");\r",
+											"});\r",
+											"\r",
+											"console.log(`Test completed for non-existent ID. Status: ${pm.response.code}`);\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/products/9999",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"products",
+										"9999"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "GET Invalid Route (Expect 404)",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// Step 1: Checking for 404 Not Found status\r",
+											"pm.test(\"Status code is 404 Not Found\", function () {\r",
+											"    pm.response.to.have.status(404);\r",
+											"});\r",
+											"\r",
+											"console.log(`Test completed for an invalid route. Status: ${pm.response.code}`);\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {},
+										"requests": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/nonexistent-route",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"nonexistent-route"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					"// Runs after every request in this collection\r",
+					"pm.test(\"Response time under 500ms\", () => {\r",
+					"  pm.expect(pm.response.responseTime).to.be.below(500);\r",
+					"});"
+				]
+			}
+		}
+	]
+}
